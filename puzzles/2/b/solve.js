@@ -1,4 +1,4 @@
-const puzzleNumber = `2/a`;
+const puzzleNumber = `2/b`;
 console.log(`---Advent of Code 2023 #${puzzleNumber} ---`);
 const myParser = require('../../../utils/input-parser.js');
 let linesOfMockData = myParser.parseLinesOfText(`./puzzles/${puzzleNumber}/mock-data.txt`);
@@ -49,6 +49,27 @@ function isValidGame(gameObject) {
         return invalid;
     })
 }
+function minimumValues(gameObject) {
+    let minimums = {
+        red: 0,
+        blue: 0,
+        green: 0
+    };
+    const result = gameObject.runs.reduce((acc, curr) => {
+        if(curr.red > acc.red) {
+            acc.red = curr.red;
+        }
+        if(curr.blue > acc.blue) {
+            acc.blue = curr.blue;
+        }
+        if(curr.green > acc.green) {
+            acc.green = curr.green;
+        }
+        return acc;
+    }, minimums);
+    console.log(result)
+    return result;
+}
 
 let splitArray = arrayOfData.map((line) => {
     let lineArray = line.split(':');
@@ -67,12 +88,8 @@ let splitArray = arrayOfData.map((line) => {
 console.log(splitArray);
 
 let solution = splitArray.reduce((acc, curr) => {
-    let validGame = isValidGame(curr);
-
-    if(validGame) {
-        return acc + curr.id;
-    } else {
-        return acc;
-    }
+    const minimums = minimumValues(curr);
+    acc += minimums.red * minimums.blue * minimums.green;
+    return acc;
 }, 0);
 console.log(`Solution: #${puzzleNumber}`, solution);
