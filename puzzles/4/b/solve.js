@@ -1,4 +1,4 @@
-const puzzleNumber = `4/a`;
+const puzzleNumber = `4/b`;
 console.log(`---Advent of Code 2023 #${puzzleNumber} ---`);
 const myParser = require('../../../utils/input-parser.js');
 let linesOfMockData = myParser.parseLinesOfText(`./puzzles/${puzzleNumber}/mock-data.txt`);
@@ -50,10 +50,50 @@ const games = arrayOfData.map((line, index) => {
    return game;
 });
 // console.log('games', games);
+let cardCount = 0;
+games.forEach((gameResult) => {
+    cardCount += 1;
+    if(gameResult.matches.length > 0) {
+        cardCount += winCopyOfCard(gameResult, games);
+    }
+});
+// console.log(cardCount);
 
-let solution = games.reduce((accumulator, currentValue) => {
-    return accumulator + currentValue.totalScore;
-}, 0);
+function winCopyOfCard(game, gameArray) {
+    // console.log('game', game);
+    if(!game){
+        // console.log('what is this?', game);
+        return;
+    }
+
+    let newCards = 0;
+    if(game.matches.length) {
+        let childWins = 0;
+        for(let i = 0; i < game.matches.length; i++) {
+            const childIndex = game.gameNumber + i;
+            if(childIndex >= gameArray.length){
+                continue;
+            } else {
+                //add 1 card for the child
+                childWins += 1;
+                //see if the child has any winning numbers
+                if(gameArray[childIndex].matches.length){
+                    childWins += winCopyOfCard(gameArray[childIndex], gameArray);
+                }
+            }
+        }
+        newCards = childWins + newCards;
+    }
+    // console.log('game', game);
+    // console.log('matches', game.matches);
+    // console.log('newCards', newCards);
+    return newCards;
+}
+
+let solution = cardCount;
+// let solution = games.reduce((accumulator, currentValue) => {
+//     return accumulator + currentValue.totalScore;
+// }, 0);
 
 console.log(`Solution: #${puzzleNumber}`, solution);
 
